@@ -1,5 +1,11 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
+  nitro: {
+    output: {
+      dir: './dash1'
+    }
+  },
+  
   devtools: { enabled: true },
   
   devServer: {
