@@ -175,24 +175,18 @@ export type Mail = (typeof mails)[number]
 
 export const accounts = [
   {
-    label: '文章',
-    email: '文章',
-    icon: 'mdi:google',
-  },
-
-  {
-    label: '图片',
-    email: '图片',
+    label: 'Alicia Koch',
+    email: 'alicia@example.com',
     icon: 'ion:logo-vercel',
   },
   {
-    label: '音频',
-    email: '音频',
+    label: 'Alicia Koch',
+    email: 'alicia@gmail.com',
     icon: 'mdi:google',
   },
   {
-    label: '视频',
-    email: '视频',
+    label: 'Alicia Koch',
+    email: 'alicia@me.com',
     icon: 'bx:bxl-gmail',
   },
 ]

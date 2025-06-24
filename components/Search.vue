@@ -25,7 +25,7 @@ function handleSelectLink(link: string) {
 </script>
 
 <template>
-  <SidebarMenuButton as-child tooltip="Search">
+  <!-- <SidebarMenuButton as-child tooltip="Search">
     <Button variant="outline" size="sm" class="text-xs" @click="openCommand = !openCommand">
       <Icon name="i-lucide-search" />
       <span class="font-normal group-data-[collapsible=icon]:hidden">Search documentation</span>
@@ -34,7 +34,7 @@ function handleSelectLink(link: string) {
         <BaseKbd>K</BaseKbd>
       </div>
     </Button>
-  </SidebarMenuButton>
+  </SidebarMenuButton> -->
 
   <CommandDialog v-model:open="openCommand">
     <CommandInput placeholder="Type a command or search..." />

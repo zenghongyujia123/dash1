@@ -1,8 +1,8 @@
 {
-  "name": "nuxt-shadcn-dashboard",
+  "name": "dash1",
   "type": "module",
   "version": "0.2.6",
-  "description": "Shadcn Dashboard built with Nuxt",
+  "description": "dash1",
   "author": "Dian Pratama <dianpratama2@gmail.com>",
   "license": "MIT",
   "homepage": "https://dashboard.dianprata.com/",
@@ -41,7 +41,9 @@
     "postinstall": "nuxt prepare",
     "typecheck": "vue-tsc --noEmit",
     "lint": "eslint .",
-    "format": "eslint --fix ."
+    "format": "eslint --fix .",
+    "deploy": "npm run build && ./.vscode/deploy.sh",
+    "start": "PORT=3002 node dash1/server/index.mjs"
   },
   "dependencies": {
     "@iconify-json/lucide": "^1.2.30",
@@ -51,6 +53,7 @@
     "@tanstack/vue-table": "^8.21.2",
     "@unovis/ts": "^1.5.1",
     "@unovis/vue": "^1.5.1",
+    "basic-ftp": "^5.0.5",
     "embla-carousel": "^8.5.2",
     "embla-carousel-vue": "^8.5.2"
   },
