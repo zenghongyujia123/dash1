@@ -4,10 +4,21 @@ import type { LinkProp } from '~/components/mail/Nav.vue'
 import { useMediaQuery } from '@vueuse/core'
 import { Search } from 'lucide-vue-next'
 import { cn } from '~/lib/utils'
-import { Loader2 } from 'lucide-vue-next'
+import { Loader2, Globe } from 'lucide-vue-next'
 import { useToast } from '@/components/ui/toast/use-toast'
+import { useI18n } from '#imports'
+import {
+  MultiSelect,
+  MultiSelectTrigger,
+  MultiSelectValue,
+} from '@/components/translate/multiselect'
+
 
 const { toast } = useToast()
+const { t, locale, locales } = useI18n()
+
+// 切换界面语言
+
 const props = withDefaults(defineProps<MailProps>(), {
   defaultCollapsed: false,
   defaultLayout: () => [18, 82],
@@ -54,62 +65,61 @@ const unreadMailList = computed(() => filteredMailList.value.filter(item => !ite
 
 const links: LinkProp[] = [
   {
-    title: '手动翻译',
+    title: t('translate.manual'),
     label: '128',
     icon: 'lucide:inbox',
     variant: 'ghost',
   },
   {
-    title: 'TXT翻译',
+    title: t('translate.txt'),
     label: '128',
     icon: 'lucide:square-equal',
     variant: 'default',
   },
   {
-    title: 'HTML翻译',
+    title: t('translate.html'),
     label: '9',
     icon: 'lucide:file',
     variant: 'ghost',
-
   },
   {
-    title: 'WORD翻译',
+    title: t('translate.word'),
     label: '',
     icon: 'lucide:scroll-text',
     variant: 'ghost',
   },
   {
-    title: 'PDF翻译',
+    title: t('translate.pdf'),
     label: '23',
     icon: 'lucide:app-window-mac',
     variant: 'ghost',
   },
   {
-    title: 'EXCEL翻译',
+    title: t('translate.excel'),
     label: '',
     icon: 'lucide:table-properties',
     variant: 'ghost',
   },
   {
-    title: '文言文翻译',
+    title: t('translate.classical'),
     label: '',
     icon: 'lucide:inspection-panel',
     variant: 'ghost',
   },
   {
-    title: 'MP3翻译',
+    title: t('translate.mp3'),
     label: '',
     icon: 'lucide:file-audio',
     variant: 'ghost',
   },
   {
-    title: 'WAV翻译',
+    title: t('translate.wav'),
     label: '',
     icon: 'lucide:file-audio-2',
     variant: 'ghost',
   },
   {
-    title: 'M4A翻译',
+    title: t('translate.m4a'),
     label: '',
     icon: 'lucide:file-video',
     variant: 'ghost',
@@ -118,7 +128,7 @@ const links: LinkProp[] = [
 
 const links2: LinkProp[] = [
   {
-    title: '图片翻译',
+    title: t('translate.image'),
     label: '342',
     icon: 'lucide:file-image',
     variant: 'ghost',
@@ -143,312 +153,312 @@ const lg_arr = ref(
     {
       "first": "A",
       "lgs": [
-        "阿拉伯语",
-        "爱沙尼亚语",
-        "阿塞拜疆语",
-        "阿尔巴尼亚语",
-        "爱尔兰语",
-        "阿姆哈拉语",
-        "阿萨姆语",
-        "奥里亚语",
-        "阿尔及利亚阿拉伯语",
-        "阿肯语",
-        "阿拉贡语",
-        "阿斯图里亚斯语",
-        "艾马拉语",
-        "奥杰布瓦语",
-        "奥克语",
-        "奥罗莫语",
-        "奥塞梯语"
+        t('languages.arabic'),
+        t('languages.estonian'),
+        t('languages.azerbaijani'),
+        t('languages.albanian'),
+        t('languages.irish'),
+        t('languages.amharic'),
+        t('languages.assamese'),
+        t('languages.oriya'),
+        t('languages.algerian_arabic'),
+        t('languages.akan'),
+        t('languages.aragonese'),
+        t('languages.asturian'),
+        t('languages.aymara'),
+        t('languages.ojibwe'),
+        t('languages.occitan'),
+        t('languages.oromo'),
+        t('languages.ossetic')
       ]
     },
     {
       "first": "B",
       "lgs": [
-        "波兰语",
-        "保加利亚语",
-        "波斯语",
-        "白俄罗斯语",
-        "波斯尼亚语",
-        "巴斯克语",
-        "冰岛语",
-        "北索托语",
-        "比斯拉马语",
-        "巴什基尔语",
-        "巴西葡萄牙语",
-        "柏柏尔语",
-        "邦板牙语",
-        "北方萨米语",
-        "本巴语",
-        "比林语",
-        "俾路支语",
-        "博杰普尔语",
-        "布列塔尼语"
+        t('languages.polish'),
+        t('languages.bulgarian'),
+        t('languages.persian'),
+        t('languages.belarusian'),
+        t('languages.bosnian'),
+        t('languages.basque'),
+        t('languages.icelandic'),
+        t('languages.northernSotho'),
+        t('languages.bislama'),
+        t('languages.bashkir'),
+        t('languages.brazilianPortuguese'),
+        t('languages.berber'),
+        t('languages.pangasinan'),
+        t('languages.northernSami'),
+        t('languages.bemba'),
+        t('languages.blin'),
+        t('languages.baluchi'),
+        t('languages.bhojpuri'),
+        t('languages.breton')
       ]
     },
     {
       "first": "C",
       "lgs": [
-        "聪加语",
-        "楚瓦什语"
+        t('languages.tsonga'),
+        t('languages.chuvash')
       ]
     },
     {
       "first": "D",
       "lgs": [
-        "德语",
-        "丹麦语",
-        "迪维希语",
-        "德顿语",
-        "鞑靼语",
-        "低地德语"
+        t('languages.german'),
+        t('languages.danish'),
+        t('languages.dhivehi'),
+        t('languages.tetum'),
+        t('languages.tatar'),
+        t('languages.lowGerman')
       ]
     },
     {
       "first": "E",
       "lgs": [
-        "俄语"
+        t('languages.russian')
       ]
     },
     {
       "first": "F",
       "lgs": [
-        "法语",
-        "芬兰语",
-        "菲律宾语",
-        "富拉尼语",
-        "法罗语",
-        "梵语",
-        "弗留利语"
+        t('languages.french'),
+        t('languages.finnish'),
+        t('languages.filipino'),
+        t('languages.fulani'),
+        t('languages.faroese'),
+        t('languages.sanskrit'),
+        t('languages.friulian')
       ]
     },
     {
       "first": "G",
       "lgs": [
-        "高棉语",
-        "格鲁吉亚语",
-        "古吉拉特语",
-        "刚果语",
-        "瓜拉尼语",
-        "格陵兰语",
-        "盖尔语",
-        "高地索布语",
-        "古希腊语",
-        "古英语"
+        t('languages.khmer'),
+        t('languages.georgian'),
+        t('languages.gujarati'),
+        t('languages.kongo'),
+        t('languages.guarani'),
+        t('languages.greenlandic'),
+        t('languages.gaelic'),
+        t('languages.upperSorbian'),
+        t('languages.ancientGreek'),
+        t('languages.oldEnglish')
       ]
     },
     {
       "first": "H",
       "lgs": [
-        "韩语",
-        "荷兰语",
-        "黑山语",
-        "豪萨语",
-        "海地语",
-        "哈卡钦语",
-        "胡帕语"
+        t('languages.korean'),
+        t('languages.dutch'),
+        t('languages.montenegrin'),
+        t('languages.hausa'),
+        t('languages.haitian'),
+        t('languages.hakha'),
+        t('languages.hupa')
       ]
     },
     {
       "first": "J",
       "lgs": [
-        "捷克语",
-        "加泰罗尼亚语",
-        "加利西亚语",
-        "吉尔吉斯语",
-        "加拿大法语"
+        t('languages.czech'),
+        t('languages.catalan'),
+        t('languages.galician'),
+        t('languages.kyrgyz'),
+        t('languages.canadianFrench')
       ]
     },
     {
       "first": "K",
       "lgs": [
-        "克罗地亚语",
-        "卡纳达语",
-        "科萨语",
-        "科西嘉语",
-        "库尔德语",
-        "孔卡尼语",
-        "克什米尔语",
-        "卡拜尔语",
-        "卡努里语",
-        "卡舒比语",
-        "康瓦尔语",
-        "克里克语",
-        "克里米亚鞑靼语",
-        "克林贡语",
-        "克丘亚语"
+        t('languages.croatian'),
+        t('languages.kannada'),
+        t('languages.xhosa'),
+        t('languages.corsican'),
+        t('languages.kurdish'),
+        t('languages.konkani'),
+        t('languages.kashmiri'),
+        t('languages.kabyle'),
+        t('languages.kanuri'),
+        t('languages.kashubian'),
+        t('languages.cornish'),
+        t('languages.creek'),
+        t('languages.crimeanTatar'),
+        t('languages.klingon'),
+        t('languages.quechua')
       ]
     },
     {
       "first": "L",
       "lgs": [
-        "罗马尼亚语",
-        "老挝语",
-        "拉丁语",
-        "立陶宛语",
-        "拉脱维亚语",
-        "卢森堡语",
-        "林加拉语",
-        "罗曼什语",
-        "拉特加莱语",
-        "林堡语",
-        "卢干达语",
-        "卢森尼亚语",
-        "卢旺达语",
-        "罗姆语",
-        "逻辑语"
+        t('languages.romanian'),
+        t('languages.lao'),
+        t('languages.latin'),
+        t('languages.lithuanian'),
+        t('languages.latvian'),
+        t('languages.luxembourgish'),
+        t('languages.lingala'),
+        t('languages.romansh'),
+        t('languages.latgalian'),
+        t('languages.limburgish'),
+        t('languages.luganda'),
+        t('languages.rusyn'),
+        t('languages.kinyarwanda'),
+        t('languages.romani'),
+        t('languages.lojban')
       ]
     },
     {
       "first": "M",
       "lgs": [
-        "缅甸语",
-        "马来语",
-        "苗语",
-        "孟加拉语",
-        "马其顿语",
-        "马拉地语",
-        "马拉雅拉姆语",
-        "马耳他语",
-        "毛利语",
-        "马拉加斯语",
-        "迈蒂利语",
-        "马绍尔语",
-        "曼克斯语",
-        "毛里求斯克里奥尔语"
+        t('languages.burmese'),
+        t('languages.malay'),
+        t('languages.hmong'),
+        t('languages.bengali'),
+        t('languages.macedonian'),
+        t('languages.marathi'),
+        t('languages.malayalam'),
+        t('languages.maltese'),
+        t('languages.maori'),
+        t('languages.malagasy'),
+        t('languages.maithili'),
+        t('languages.marshallese'),
+        t('languages.manx'),
+        t('languages.mauritianCreole')
       ]
     },
     {
       "first": "N",
       "lgs": [
-        "挪威语",
-        "尼泊尔语",
-        "南非荷兰语",
-        "南索托语",
-        "南恩德贝莱语",
-        "那不勒斯语"
+        t('languages.norwegian'),
+        t('languages.nepali'),
+        t('languages.afrikaans'),
+        t('languages.southernSotho'),
+        t('languages.southernNdebele'),
+        t('languages.neapolitan')
       ]
     },
     {
       "first": "P",
       "lgs": [
-        "葡萄牙语",
-        "普什图语",
-        "旁遮普语",
-        "帕皮阿门托语"
+        t('languages.portuguese'),
+        t('languages.pashto'),
+        t('languages.punjabi'),
+        t('languages.papiamento')
       ]
     },
     {
       "first": "Q",
       "lgs": [
-        "齐切瓦语",
-        "契维语",
-        "切罗基语"
+        t('languages.chichewa'),
+        t('languages.twi'),
+        t('languages.cherokee')
       ]
     },
     {
       "first": "R",
       "lgs": [
-        "日语",
-        "瑞典语"
+        t('languages.japanese'),
+        t('languages.swedish')
       ]
     },
     {
       "first": "S",
       "lgs": [
-        "斯洛文尼亚语",
-        "斯洛伐克语",
-        "僧伽罗语 ",
-        "塞尔维亚语(拉丁文)",
-        "塞尔维亚语(西里尔文)",
-        "斯瓦希里语",
-        "索马里语",
-        "萨摩亚语",
-        "世界语",
-        "苏格兰语",
-        "萨丁尼亚语",
-        "塞尔维亚-克罗地亚语",
-        "掸语",
-        "桑海语",
-        "书面挪威语",
-        "宿务语"
+        t('languages.slovenian'),
+        t('languages.slovak'),
+        t('languages.sinhala') + ' ',
+        t('languages.serbianLatin'),
+        t('languages.serbianCyrillic'),
+        t('languages.swahili'),
+        t('languages.somali'),
+        t('languages.samoan'),
+        t('languages.esperanto'),
+        t('languages.scots'),
+        t('languages.sardinian'),
+        t('languages.serboCroatian'),
+        t('languages.shan'),
+        t('languages.songhay'),
+        t('languages.bokmal'),
+        t('languages.cebuano')
       ]
     },
     {
       "first": "T",
       "lgs": [
-        "泰语",
-        "土耳其语",
-        "泰米尔语",
-        "土库曼语",
-        "塔吉克语",
-        "泰卢固语",
-        "他加禄语",
-        "提格利尼亚语",
-        "突尼斯阿拉伯语"
+        t('languages.thai'),
+        t('languages.turkish'),
+        t('languages.tamil'),
+        t('languages.turkmen'),
+        t('languages.tajik'),
+        t('languages.telugu'),
+        t('languages.tagalog'),
+        t('languages.tigrinya'),
+        t('languages.tunisianArabic')
       ]
     },
     {
       "first": "W",
       "lgs": [
-        "乌克兰语",
-        "乌尔都语",
-        "威尔士语",
-        "沃洛夫语",
-        "文达语",
-        "瓦隆语"
+        t('languages.ukrainian'),
+        t('languages.urdu'),
+        t('languages.welsh'),
+        t('languages.wolof'),
+        t('languages.venda'),
+        t('languages.walloon')
       ]
     },
     {
       "first": "X",
       "lgs": [
-        "西班牙语",
-        "匈牙利语",
-        "希腊语",
-        "希伯来语",
-        "信德语",
-        "修纳语",
-        "夏威夷语",
-        "叙利亚语",
-        "巽他语",
-        "西非书面语",
-        "西弗里斯语",
-        "西里西亚语",
-        "希利盖农语",
-        "下索布语",
-        "新挪威语"
+        t('languages.spanish'),
+        t('languages.hungarian'),
+        t('languages.greek'),
+        t('languages.hebrew'),
+        t('languages.sindhi'),
+        t('languages.shona'),
+        t('languages.hawaiian'),
+        t('languages.syriac'),
+        t('languages.sundanese'),
+        t('languages.westernSaharaArabic'),
+        t('languages.westFrisian'),
+        t('languages.silesian'),
+        t('languages.hiligaynon'),
+        t('languages.lowerSorbian'),
+        t('languages.nynorsk')
       ]
     },
     {
       "first": "Y",
       "lgs": [
-        "英语",
-        "越南语",
-        "意大利语",
-        "印尼语",
-        "印地语",
-        "亚美尼亚语",
-        "约鲁巴语",
-        "伊博语",
-        "意第绪语",
-        "亚齐语",
-        "伊多语",
-        "伊努克提图特语",
-        "因特语",
-        "印古什语"
+        t('languages.english'),
+        t('languages.vietnamese'),
+        t('languages.italian'),
+        t('languages.indonesian'),
+        t('languages.hindi'),
+        t('languages.armenian'),
+        t('languages.yoruba'),
+        t('languages.igbo'),
+        t('languages.yiddish'),
+        t('languages.acehnese'),
+        t('languages.ido'),
+        t('languages.inuktitut'),
+        t('languages.interlingua'),
+        t('languages.ingush')
       ]
     },
     {
       "first": "Z",
       "lgs": [
-        "中文(简体)",
-        "中文(繁体)",
-        "中文(粤语)",
-        "中文(文言文)",
-        "祖鲁语",
-        "爪哇语",
-        "扎扎其语",
-        "中古法语"
+        t('languages.chineseSimplified'),
+        t('languages.chineseTraditional'),
+        t('languages.chineseCantonese'),
+        t('languages.chineseClassical'),
+        t('languages.zulu'),
+        t('languages.javanese'),
+        t('languages.zazaki'),
+        t('languages.medievalFrench')
       ]
     }
   ]
@@ -461,7 +471,7 @@ const handleFileUpload = (event: Event) => {
   const files = fileInput.files
 
   if (!files || files.length === 0) {
-    console.log('没有选择文件')
+    console.log(t('fileUpload.noFileSelected'))
     return
   }
 
@@ -474,7 +484,7 @@ const handleFileUpload = (event: Event) => {
   )
 
   if (txtFiles.length === 0) {
-    console.log('没有选择TXT文件')
+    console.log(t('fileUpload.noTxtFileSelected'))
     return
   }
 
@@ -516,15 +526,15 @@ const handleFileUpload = (event: Event) => {
     !file.name.toLowerCase().endsWith('.txt')
   )
   if (nonTxtFiles.length > 0) {
-    console.log('以下文件不是TXT格式，已跳过：',
+    console.log(t('fileUpload.nonTxtFilesSkipped'),
       nonTxtFiles.map(f => f.name).join(', ')
     )
   }
 }
 const config = ref({
-  task: 'TXT翻译',
-  source_lang: '中文(简体)',
-  target_lang: '英语',
+  task: t('config.task'),
+  source_lang: '',
+  target_lang: '',
   contents: [] as any
 })
 const upload_loading = ref(false)
@@ -533,8 +543,8 @@ const submit = () => {
   let count = config.value.contents.length
   if (count == 0) {
     return toast({
-      title: '提示',
-      description: '请选择上传的TXT文件',
+      title: t('toast.notice'),
+      description: t('toast.selectTxtFile'),
       variant: 'destructive'
     });
   }
@@ -545,6 +555,18 @@ const changeTaS = () => {
   config.value.source_lang = config.value.target_lang
   config.value.target_lang = src
 }
+const selectedValues = ref([] as any)
+
+// 将 lg_arr 转换为 MultiSelect 组件需要的格式
+const languageOptions = computed(() => {
+  return lg_arr.value.map(group => ({
+    label: group.first,
+    items: group.lgs.map(lang => ({
+      value: lang,
+      label: lang
+    }))
+  }))
+})
 </script>
 
 <template>
@@ -567,7 +589,7 @@ const changeTaS = () => {
         <div class="flex items-center px-4 py-2">
           <Select v-model="config.source_lang">
             <SelectTrigger style="max-width: 150px;;">
-              <SelectValue placeholder="源语言" />
+              <SelectValue :placeholder="t('translate.sourceLanguagePlaceholder')" />
             </SelectTrigger>
             <SelectContent>
               <SelectGroup v-for="item in lg_arr">
@@ -578,52 +600,50 @@ const changeTaS = () => {
               </SelectGroup>
             </SelectContent>
           </Select>
+
           <Icon name="lucide:arrow-right-left" class="mr-2 ml-2 size-4 cursor-pointer" @click=changeTaS />
-          <Select v-model="config.target_lang">
-            <SelectTrigger style="max-width: 150px;;">
-              <SelectValue placeholder="目标语言" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup v-for="item in lg_arr">
-                <SelectLabel>{{ item.first }}</SelectLabel>
-                <SelectItem :value="lg" v-for="lg in item.lgs">
-                  {{ lg }}
-                </SelectItem>
-              </SelectGroup>
-            </SelectContent>
-          </Select>
+          <MultiSelect 
+            :placeholder="t('translate.targetLanguagePlaceholder')"
+            v-model="selectedValues" 
+            :options="languageOptions"
+            multiple
+          >
+            <MultiSelectTrigger>
+              <MultiSelectValue :placeholder="t('translate.targetLanguagePlaceholder')" />
+            </MultiSelectTrigger>
+          </MultiSelect>
           <Dialog>
             <DialogTrigger as-child>
-              <Button class="ml-2">批量翻译</Button>
+              <Button class="ml-2">{{ t('translate.batchTranslate') }}</Button>
             </DialogTrigger>
             <DialogContent class="sm:max-w-[425px]">
               <DialogHeader>
-                <DialogTitle>请选择TXT文件</DialogTitle>
+                <DialogTitle>{{ t('translate.selectTxtFiles') }}</DialogTitle>
                 <DialogDescription>
                 </DialogDescription>
               </DialogHeader>
               <div class="grid w-full max-w-sm items-center gap-1.5">
-                <Input id="upload-file" type="file" multiple placeholder="选择TXT文件（可多选）" accept=".txt"
+                <Input id="upload-file" type="file" multiple :placeholder="t('fileUpload.selectTxtFiles')" accept=".txt"
                   @change="handleFileUpload" />
               </div>
               <div class="flex items-center " v-if="upload_loading">
-                <span class="text-sm text-muted-foreground">进度：</span><Progress v-model="upload_progress"
-                  class="flex-1" />
+                <span class="text-sm text-muted-foreground">{{ t('fileUpload.progress') }}</span><Progress
+                  v-model="upload_progress" class="flex-1" />
               </div>
               <DialogFooter>
                 <Button type="submit" :disabled="upload_loading" @click="submit">
                   <Loader2 v-if="upload_loading" class="w-4 h-4 mr-2 animate-spin" />
-                  提交
+                  {{ t('translate.submit') }}
                 </Button>
               </DialogFooter>
             </DialogContent>
           </Dialog>
           <TabsList class="ml-auto">
             <TabsTrigger value="操作" class="text-zinc-600 dark:text-zinc-200">
-              操作
+              {{ t('translate.operation') }}
             </TabsTrigger>
             <TabsTrigger value="历史" class="text-zinc-600 dark:text-zinc-200">
-              历史
+              {{ t('translate.history') }}
             </TabsTrigger>
           </TabsList>
         </div>
@@ -632,21 +652,21 @@ const changeTaS = () => {
         <TabsContent value="操作" class="flex flex-1 overflow-auto m-0">
           <div
             class="bg-background/95 p-4 backdrop-blur supports-[backdrop-filter]:bg-background/60 w-1/2 flex-1 flex flex-col">
-            <Textarea placeholder="请输入您需要翻译的内容。" class="flex-1" />
+            <Textarea :placeholder="t('translate.inputPlaceholder')" class="flex-1" />
             <p class="text-sm text-muted-foreground mt-2 text-right">
 
               1/20000
             </p>
-            <Button class="mt-4">开始翻译</Button>
+            <Button class="mt-4">{{ t('translate.startTranslate') }}</Button>
           </div>
           <div
             class="bg-background/95 p-4 backdrop-blur supports-[backdrop-filter]:bg-background/60 w-1/2 flex-1 flex flex-col">
-            <Textarea placeholder="已翻译内容" class="flex-1" />
+            <Textarea :placeholder="t('translate.outputPlaceholder')" class="flex-1" />
             <p class="text-sm text-muted-foreground mt-2 text-right">
 
               1/20000
             </p>
-            <Button variant="outline" class="mt-4">复制结果</Button>
+            <Button variant="outline" class="mt-4">{{ t('translate.copyResult') }}</Button>
           </div>
         </TabsContent>
         <TabsContent value="历史" class="m-0">
@@ -654,7 +674,7 @@ const changeTaS = () => {
             <form>
               <div class="relative ">
                 <Search class="absolute left-2 top-2.5 size-4 text-muted-foreground" />
-                <Input v-model="searchValue" placeholder="Search" class="pl-8" />
+                <Input v-model="searchValue" :placeholder="t('common.search')" class="pl-8" />
               </div>
             </form>
           </div>

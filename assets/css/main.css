@@ -1,0 +1,9 @@
+/* 隐藏滚动条但保留滚动功能 */
+.scroll-area-viewport::-webkit-scrollbar {
+  display: none;
+}
+
+.scroll-area-viewport {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}

@@ -20,17 +20,48 @@ export default defineNuxtConfig({
   },
 
   modules: [
-    '@unocss/nuxt',
+    ['@unocss/nuxt', {
+      ssr: true,
+      presets: [
+        // 确保包含你使用的预设
+      ]
+    }],
     'shadcn-nuxt',
     '@vueuse/nuxt',
     '@nuxt/eslint',
     '@nuxt/icon',
     '@pinia/nuxt',
     '@nuxtjs/color-mode',
+    '@nuxtjs/i18n',
   ],
+
+  i18n: {
+    defaultLocale: 'en',
+    strategy: 'prefix_except_default',
+    locales: [
+      {
+        code: 'en',
+        file: 'en.json'
+      },
+      {
+        code: 'zh',
+        file: 'zh.json'
+      }
+    ],
+    lazy: true,
+    sync: true,
+    skipSettingLocaleOnNavigate: false,
+    langDir: 'locales/',
+    detectBrowserLanguage: {
+      useCookie: true,
+      cookieKey: 'i18n_redirected',
+      redirectOn: 'root'
+    }
+  },
 
   css: [
     '@unocss/reset/tailwind.css',
+    '~/assets/css/main.css',
   ],
   imports: {
     dirs: [

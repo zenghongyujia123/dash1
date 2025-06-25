@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import DropdownLanguageSwitcher from '~/components/DropdownLanguageSwitcher.vue'
+
 const route = useRoute()
 
 function setLinks() {
@@ -42,11 +44,12 @@ watch(() => route.fullPath, (val) => {
       <!-- <SidebarTrigger /> -->
       <!-- <Separator orientation="vertical" class="h-4" /> -->
       <!-- <BaseBreadcrumbCustom :links="links" /> -->
-      <Icon name="lucide:globe" class="cursor-pointer ml-auto"/>
     </div>
     <div class="ml-auto">
       <slot />
     </div>
+    <DropdownLanguageSwitcher class="ml-auto" />
+
   </header>
 </template>
 

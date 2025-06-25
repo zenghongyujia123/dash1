@@ -1,16 +1,17 @@
 <script setup lang="ts">
+import { ClientOnly } from '#components'
 import NumberFlow from '@number-flow/vue'
 import { Activity, CreditCard, DollarSign, Users } from 'lucide-vue-next'
 
 const dataCard = ref({
-  totalRevenue: 0,
-  totalRevenueDesc: 0,
-  subscriptions: 0,
-  subscriptionsDesc: 0,
-  sales: 0,
-  salesDesc: 0,
-  activeNow: 0,
-  activeNowDesc: 0,
+  totalRevenue: 45231.89,
+  totalRevenueDesc: 20.1 / 100,
+  subscriptions: 2350,
+  subscriptionsDesc: 180.5 / 100,
+  sales: 12234,
+  salesDesc: 45 / 100,
+  activeNow: 573,
+  activeNowDesc: 201,
 })
 
 const dataRecentSales = [
@@ -77,17 +78,21 @@ onMounted(() => {
           </CardHeader>
           <CardContent>
             <div class="text-2xl font-bold">
-              <NumberFlow
-                :value="dataCard.totalRevenue"
-                :format="{ style: 'currency', currency: 'USD', trailingZeroDisplay: 'stripIfInteger' }"
-              />
+              <ClientOnly>
+                <NumberFlow
+                  :value="dataCard.totalRevenue"
+                  :format="{ style: 'currency', currency: 'USD', trailingZeroDisplay: 'stripIfInteger' }"
+                />
+              </ClientOnly>
             </div>
             <p class="text-xs text-muted-foreground">
-              <NumberFlow
-                :value="dataCard.totalRevenueDesc"
-                prefix="+"
-                :format="{ style: 'percent', minimumFractionDigits: 1 }"
-              />
+              <ClientOnly>
+                <NumberFlow
+                  :value="dataCard.totalRevenueDesc"
+                  prefix="+"
+                  :format="{ style: 'percent', minimumFractionDigits: 1 }"
+                />
+              </ClientOnly>
               from last month
             </p>
           </CardContent>
@@ -101,10 +106,12 @@ onMounted(() => {
           </CardHeader>
           <CardContent>
             <div class="text-2xl font-bold">
-              <NumberFlow
-                :value="dataCard.subscriptions"
-                prefix="+"
-              />
+              <ClientOnly>
+                <NumberFlow
+                  :value="dataCard.subscriptions"
+                  prefix="+"
+                />
+              </ClientOnly>
             </div>
             <p class="text-xs text-muted-foreground">
               <NumberFlow
@@ -124,17 +131,21 @@ onMounted(() => {
           </CardHeader>
           <CardContent>
             <div class="text-2xl font-bold">
-              <NumberFlow
-                :value="dataCard.sales"
-                prefix="+"
-              />
+              <ClientOnly>
+                <NumberFlow
+                  :value="dataCard.sales"
+                  prefix="+"
+                />
+              </ClientOnly>
             </div>
             <p class="text-xs text-muted-foreground">
-              <NumberFlow
-                :value="dataCard.salesDesc"
-                prefix="+"
-                :format="{ style: 'percent', minimumFractionDigits: 1 }"
-              /> from last month
+              <ClientOnly>
+                <NumberFlow
+                  :value="dataCard.salesDesc"
+                  prefix="+"
+                  :format="{ style: 'percent', minimumFractionDigits: 1 }"
+                />
+              </ClientOnly> from last month
             </p>
           </CardContent>
         </Card>
@@ -147,16 +158,20 @@ onMounted(() => {
           </CardHeader>
           <CardContent>
             <div class="text-2xl font-bold">
-              <NumberFlow
-                :value="dataCard.activeNow"
-                prefix="+"
-              />
+              <ClientOnly>
+                <NumberFlow
+                  :value="dataCard.activeNow"
+                  prefix="+"
+                />
+              </ClientOnly>
             </div>
             <p class="text-xs text-muted-foreground">
-              <NumberFlow
-                :value="dataCard.activeNowDesc"
-                prefix="+"
-              /> since last hour
+              <ClientOnly>
+                <NumberFlow
+                  :value="dataCard.activeNowDesc"
+                  prefix="+"
+                />
+              </ClientOnly> since last hour
             </p>
           </CardContent>
         </Card>
@@ -191,11 +206,13 @@ onMounted(() => {
                 </p>
               </div>
               <div class="ml-auto font-medium">
-                <NumberFlow
-                  :value="recentSales.amount"
-                  :format="{ style: 'currency', currency: 'USD', trailingZeroDisplay: 'stripIfInteger' }"
-                  prefix="+"
-                />
+                <ClientOnly>
+                  <NumberFlow
+                    :value="recentSales.amount"
+                    :format="{ style: 'currency', currency: 'USD', trailingZeroDisplay: 'stripIfInteger' }"
+                    prefix="+"
+                  />
+                </ClientOnly>
               </div>
             </div>
           </CardContent>

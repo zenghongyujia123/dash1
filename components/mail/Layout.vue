@@ -5,6 +5,7 @@ import { useMediaQuery } from '@vueuse/core'
 import { Search } from 'lucide-vue-next'
 import { ConfigProvider } from 'radix-vue'
 import { cn } from '~/lib/utils'
+import { useI18n } from 'vue-i18n'
 
 const props = withDefaults(defineProps<MailProps>(), {
   defaultCollapsed: false,
@@ -54,39 +55,41 @@ const unreadMailList = computed(() => filteredMailList.value.filter(item => !ite
 
 const selectedMailData = computed(() => props.mails.find(item => item.id === selectedMail.value))
 
+const { t } = useI18n()
+
 const links: LinkProp[] = [
   {
-    title: 'Inbox',
+    title: t('mail.inbox'),
     label: '128',
     icon: 'lucide:inbox',
     variant: 'default',
   },
   {
-    title: 'Drafts',
+    title: t('mail.drafts'),
     label: '9',
     icon: 'lucide:file',
     variant: 'ghost',
   },
   {
-    title: 'Sent',
+    title: t('mail.sent'),
     label: '',
     icon: 'lucide:send',
     variant: 'ghost',
   },
   {
-    title: 'Junk',
+    title: t('mail.junk'),
     label: '23',
     icon: 'lucide:archive',
     variant: 'ghost',
   },
   {
-    title: 'Trash',
+    title: t('mail.trash'),
     label: '',
     icon: 'lucide:trash',
     variant: 'ghost',
   },
   {
-    title: 'Archive',
+    title: t('mail.archive'),
     label: '',
     icon: 'lucide:archive',
     variant: 'ghost',
@@ -95,31 +98,31 @@ const links: LinkProp[] = [
 
 const links2: LinkProp[] = [
   {
-    title: 'Social',
+    title: t('mail.social'),
     label: '972',
     icon: 'lucide:user-2',
     variant: 'ghost',
   },
   {
-    title: 'Updates',
+    title: t('mail.updates'),
     label: '342',
     icon: 'lucide:alert-circle',
     variant: 'ghost',
   },
   {
-    title: 'Forums',
+    title: t('mail.forums'),
     label: '128',
     icon: 'lucide:message-square',
     variant: 'ghost',
   },
   {
-    title: 'Shopping',
+    title: t('mail.shopping'),
     label: '8',
     icon: 'lucide:shopping-cart',
     variant: 'ghost',
   },
   {
-    title: 'Promotions',
+    title: t('mail.promotions'),
     label: '21',
     icon: 'lucide:archive',
     variant: 'ghost',
@@ -182,21 +185,21 @@ watch(() => defaultCollapse.value, () => {
               <h1 class="text-xl font-bold">
                 Inbox
               </h1>
-              <TabsList class="ml-auto">
-                <TabsTrigger value="all" class="text-zinc-600 dark:text-zinc-200">
-                  All mail
-                </TabsTrigger>
-                <TabsTrigger value="unread" class="text-zinc-600 dark:text-zinc-200">
-                  Unread
-                </TabsTrigger>
-              </TabsList>
-            </div>
-            <Separator />
-            <div class="bg-background/95 p-4 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-              <form>
-                <div class="relative">
-                  <Search class="absolute left-2 top-2.5 size-4 text-muted-foreground" />
-                  <Input v-model="searchValue" placeholder="Search" class="pl-8" />
+                              <TabsList class="ml-auto">
+                                <TabsTrigger value="all" class="text-zinc-600 dark:text-zinc-200">
+                                  {{ $t('mail.allMail') }}
+                                </TabsTrigger>
+                                <TabsTrigger value="unread" class="text-zinc-600 dark:text-zinc-200">
+                                  {{ $t('mail.unread') }}
+                                </TabsTrigger>
+                              </TabsList>
+                            </div>
+                            <Separator />
+                            <div class="bg-background/95 p-4 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+                              <form>
+                                <div class="relative">
+                                  <Search class="absolute left-2 top-2.5 size-4 text-muted-foreground" />
+                                  <Input v-model="searchValue" :placeholder="$t('mail.searchPlaceholder')" class="pl-8" />
                 </div>
               </form>
             </div>

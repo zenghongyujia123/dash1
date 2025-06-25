@@ -1,17 +1,17 @@
 <script setup lang="ts">
 const data = [
-  { name: 'Jan', total: Math.floor(Math.random() * 5000) + 1000 },
-  { name: 'Feb', total: Math.floor(Math.random() * 5000) + 1000 },
-  { name: 'Mar', total: Math.floor(Math.random() * 5000) + 1000 },
-  { name: 'Apr', total: Math.floor(Math.random() * 5000) + 1000 },
-  { name: 'May', total: Math.floor(Math.random() * 5000) + 1000 },
-  { name: 'Jun', total: Math.floor(Math.random() * 5000) + 1000 },
-  { name: 'Jul', total: Math.floor(Math.random() * 5000) + 1000 },
-  { name: 'Aug', total: Math.floor(Math.random() * 5000) + 1000 },
-  { name: 'Sep', total: Math.floor(Math.random() * 5000) + 1000 },
-  { name: 'Oct', total: Math.floor(Math.random() * 5000) + 1000 },
-  { name: 'Nov', total: Math.floor(Math.random() * 5000) + 1000 },
-  { name: 'Dec', total: Math.floor(Math.random() * 5000) + 1000 },
+  { name: 'Jan', total: 4000 },
+  { name: 'Feb', total: 3000 },
+  { name: 'Mar', total: 5000 },
+  { name: 'Apr', total: 2780 },
+  { name: 'May', total: 1890 },
+  { name: 'Jun', total: 2390 },
+  { name: 'Jul', total: 3490 },
+  { name: 'Aug', total: 4000 },
+  { name: 'Sep', total: 4800 },
+  { name: 'Oct', total: 3908 },
+  { name: 'Nov', total: 4300 },
+  { name: 'Dec', total: 5100 },
 ]
 </script>
 
