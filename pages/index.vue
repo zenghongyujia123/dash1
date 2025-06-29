@@ -3,6 +3,39 @@ import { ClientOnly } from '#components'
 import NumberFlow from '@number-flow/vue'
 import { Activity, CreditCard, DollarSign, Users } from 'lucide-vue-next'
 
+// SEO配置
+useHead({
+  title: 'Dashboard Overview',
+  meta: [
+    {
+      name: 'description',
+      content: 'Real-time dashboard showing key metrics including revenue, subscriptions, sales, and active users. Monitor your business performance with interactive charts and recent sales data.'
+    },
+    {
+      name: 'keywords',
+      content: 'dashboard, analytics, revenue tracking, sales monitoring, business metrics, real-time data'
+    },
+    // Open Graph
+    {
+      property: 'og:title',
+      content: 'Dashboard Overview - Real-time Business Metrics'
+    },
+    {
+      property: 'og:description',
+      content: 'Real-time dashboard showing key metrics including revenue, subscriptions, sales, and active users. Monitor your business performance with interactive charts and recent sales data.'
+    },
+    // Twitter
+    {
+      name: 'twitter:title',
+      content: 'Dashboard Overview - Real-time Business Metrics'
+    },
+    {
+      name: 'twitter:description',
+      content: 'Real-time dashboard showing key metrics including revenue, subscriptions, sales, and active users. Monitor your business performance with interactive charts and recent sales data.'
+    }
+  ]
+})
+
 const dataCard = ref({
   totalRevenue: 45231.89,
   totalRevenueDesc: 20.1 / 100,

@@ -1,8 +1,11 @@
 <script setup lang="ts">
+import { ToastProvider } from '@/components/ui/toast'
+import { Toaster } from '@/components/ui/toast'
 </script>
 
 <template>
-  <SidebarProvider>
+  <ToastProvider>
+    <SidebarProvider>
     <!-- <LayoutAppSidebar /> -->
     <SidebarInset>
       <LayoutHeader />
@@ -10,7 +13,9 @@
         <slot />
       </div>
     </SidebarInset>
-  </SidebarProvider>
+    </SidebarProvider>
+    <Toaster />
+  </ToastProvider>
 </template>
 
 <style scoped>

@@ -19,9 +19,11 @@ const props = withDefaults(defineProps<{
   options?: OptionGroup[]
   multiple?: boolean
   placeholder?: string
+  maxDisplay?: number // 最大显示数量
 }>(), {
   options: () => [],
-  multiple: true
+  multiple: true,
+  maxDisplay: 3 // 默认最多显示3个选项
 })
 
 const emits = defineEmits<{
@@ -101,6 +103,23 @@ watchEffect(() => {
   selectedValues.value = props.modelValue || []
 })
 
+// 计算要显示的选中项和是否需要显示省略号
+const displayedSelections = computed(() => {
+  if (selectedValues.value.length <= props.maxDisplay) {
+    return selectedValues.value;
+  }
+  return selectedValues.value.slice(0, props.maxDisplay);
+});
+
+const showEllipsis = computed(() => {
+  return selectedValues.value.length > props.maxDisplay;
+});
+
+// 计算未显示的选项数量
+const hiddenCount = computed(() => {
+  return selectedValues.value.length - props.maxDisplay;
+});
+
 function getOptionLabel(value: string): string {
   for (const group of props.options) {
     const option = group.items.find(item => item.value === value)
@@ -133,14 +152,19 @@ function clearSelection(event: Event) {
     <div
       class="flex h-9 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-1 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 cursor-pointer"
       @click="toggleDropdown($event)" @keydown="handleKeydown">
-      <div class="flex flex-wrap gap-1 min-w-[120px]">
+      <div class="flex flex-nowrap gap-1 min-w-[200px] overflow-hidden max-w-full">
         <span v-if="selectedValues.length === 0" class="text-muted-foreground">
           {{ placeholder || '目标语言...' }}
         </span>
         <template v-else>
-          <span v-for="value in selectedValues" :key="value"
-            class="inline-flex items-center rounded bg-accent px-2 py-0.5 text-xs font-medium text-accent-foreground">
+          <span v-for="value in displayedSelections" :key="value"
+            class="inline-flex items-center rounded bg-accent px-2 py-0.5 text-xs font-medium text-accent-foreground whitespace-nowrap">
             {{ getOptionLabel(value) }}
+          </span>
+          <span v-if="showEllipsis"
+            class="inline-flex items-center rounded bg-accent px-2 py-0.5 text-xs font-medium text-accent-foreground whitespace-nowrap"
+            :title="`还有${hiddenCount}个选项未显示`">
+            +{{ hiddenCount }}
           </span>
         </template>
       </div>

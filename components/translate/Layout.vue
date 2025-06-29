@@ -2,7 +2,7 @@
 import type { Mail } from './data/mails'
 import type { LinkProp } from '~/components/mail/Nav.vue'
 import { useMediaQuery } from '@vueuse/core'
-import { Search } from 'lucide-vue-next'
+import moment from 'moment'
 import { cn } from '~/lib/utils'
 import { Loader2, Globe } from 'lucide-vue-next'
 import { useToast } from '@/components/ui/toast/use-toast'
@@ -12,7 +12,14 @@ import {
   MultiSelectTrigger,
   MultiSelectValue,
 } from '@/components/translate/multiselect'
-
+import { api } from '@/utils/api'
+import { onMounted } from 'vue'
+let user_id = ''
+onMounted(async () => {
+  user_id = localStorage.getItem('user_id') || ''
+  console.log(user_id)
+  getList()
+})
 
 const { toast } = useToast()
 const { t, locale, locales } = useI18n()
@@ -37,7 +44,8 @@ interface MailProps {
 }
 
 const isCollapsed = ref(props.defaultCollapsed)
-const selectedMail = ref<string | undefined>()
+const selectedTask = ref({} as any)
+const selectedArt = ref({} as any)
 const searchValue = ref('')
 const debouncedSearch = refDebounced(searchValue, 250)
 
@@ -464,6 +472,17 @@ const lg_arr = ref(
   ]
 )
 const upload_progress = ref(50)
+const showFileUploadDialog = ref(false) // 控制文件上传对话框的显示状态
+
+// 打开文件上传对话框的方法
+const openFileUploadDialog = () => {
+  showFileUploadDialog.value = true
+}
+
+// 关闭文件上传对话框的方法
+const closeFileUploadDialog = () => {
+  showFileUploadDialog.value = false
+}
 
 // 处理文件上传
 const handleFileUpload = (event: Event) => {
@@ -505,7 +524,12 @@ const handleFileUpload = (event: Event) => {
       // 当所有txt文件都处理完毕时，输出结果
       if (filesProcessed === txtFiles.length) {
         console.log('所有TXT文件内容:', fileContents)
-        config.value.contents = fileContents
+        let results = []
+        for (var i = 0; i < fileContents.length; i++) {
+
+          results.push({ content: fileContents[i], title: file.name })
+        }
+        config.value.contents = results
       }
     }
 
@@ -530,32 +554,68 @@ const handleFileUpload = (event: Event) => {
       nonTxtFiles.map(f => f.name).join(', ')
     )
   }
+  closeFileUploadDialog()
 }
 const config = ref({
-  task: t('config.task'),
+  task_type: 'multi_translation',
   source_lang: '',
-  target_lang: '',
-  contents: [] as any
+  target_langs: [] as any,
+  contents: [] as any,
+  content_count: 0,
 })
 const upload_loading = ref(false)
-const submit = () => {
-  console.log(config.value)
-  let count = config.value.contents.length
-  if (count == 0) {
-    return toast({
-      title: t('toast.notice'),
-      description: t('toast.selectTxtFile'),
+const getList = async () => {
+  let res = await api.post('/usertask/usertask_list', { user_id, task_type: config.value.task_type, })
+  if (res.list) {
+    tasklist.value = res.list
+  }
+  console.log(res)
+}
+const submit = async () => {
+  try {
+    console.log('提交的配置:', config.value)
+    console.log('用户ID:', user_id)
+
+    upload_loading.value = true
+    let res = await api.post('/usertask/usertask_upd', { ...config.value, user_id })
+    console.log('API响应:', res)
+
+    if (res && res.msg && res.user_id) {
+      user_id = res.user_id
+      console.log('保存用户ID:', res.user_id)
+      localStorage.setItem('user_id', res.user_id)
+      config.value.contents = []
+      config.value.target_langs = []
+      showHistory()
+      toast({
+        description: res.msg,
+      });
+    } else {
+      console.error('API响应格式不正确:', res)
+      toast({
+        title: '错误',
+        description: '服务器响应格式不正确',
+        variant: 'destructive'
+      });
+    }
+  } catch (error) {
+    console.error('提交失败:', error)
+    toast({
+      title: '错误',
+      description: error instanceof Error ? error.message : '提交失败',
       variant: 'destructive'
     });
+  } finally {
+    upload_loading.value = false
+    isShowSubmitDialog.value = false
   }
-
 }
 const changeTaS = () => {
-  let src = config.value.source_lang
-  config.value.source_lang = config.value.target_lang
-  config.value.target_lang = src
+  // let src = config.value.source_lang
+  // config.value.source_lang = config.value.target_lang
+  // config.value.target_lang = src
 }
-const selectedValues = ref([] as any)
+
 
 // 将 lg_arr 转换为 MultiSelect 组件需要的格式
 const languageOptions = computed(() => {
@@ -567,6 +627,63 @@ const languageOptions = computed(() => {
     }))
   }))
 })
+const selectedTab = ref('多篇翻译')
+const isShowSubmitDialog = ref(false)
+const showSubmitDialog = () => {
+  console.log(config.value)
+  config.value.content_count = config.value.contents.length
+  config.value.source_lang = config.value.source_lang.trim()
+  config.value.target_langs = config.value.target_langs.map((lang: any) => lang.trim())
+  if (config.value.target_langs.length == 0) {
+    return toast({
+      title: t('toast.notice'),
+      description: t('toast.selectTargetLang'),
+      variant: 'destructive'
+    });
+  }
+  if (config.value.contents.length == 0) {
+    return toast({
+      title: t('toast.notice'),
+      description: '请输入或导入需要翻译的内容',
+      variant: 'destructive'
+
+    });
+  }
+  isShowSubmitDialog.value = true
+}
+const showHistory = () => {
+  selectedTab.value = '翻译历史'
+  getList()
+}
+const getArtList = async (task: any) => {
+  selectedTask.value = task
+  let res = await api.post('/usertask/usertaskitem_list', { user_task_id: task._id })
+  if (res.list) {
+    artlist.value = res.list
+  }
+  console.log(res)
+}
+watch(() => selectedTab.value, (newTab, oldTab) => {
+  console.log(`Tab changed from ${oldTab} to ${newTab}`);
+  // 在这里执行tab变化时需要的逻辑
+  if (newTab === '翻译历史') {
+    getList(); // 例如，当切换到历史标签时获取列表数据
+  }
+});
+const tasklist = ref([] as any)
+const artlist = ref([] as any)
+const htmlContent = ref('')
+const htmlNewContent = ref('')
+const select_art = async (art: any) => {
+  selectedArt.value = art
+  let res = await api.post('/usertask/usertaskitem_format', { _id: art._id })
+  if (res.format_content) {
+    htmlContent.value = res.format_content
+  }
+  if (res.format_new_content) {
+    htmlNewContent.value = res.format_new_content
+  }
+}
 </script>
 
 <template>
@@ -585,10 +702,25 @@ const languageOptions = computed(() => {
     </ResizablePanel>
     <ResizableHandle id="resize-handle-1" with-handle />
     <ResizablePanel id="resize-panel-2" :default-size="defaultLayout[1]" :min-size="30" class="flex flex-col h-full">
-      <Tabs default-value="操作" class="flex flex-col flex-1  ">
+      <Tabs v-model="selectedTab" class="flex flex-col flex-1  ">
         <div class="flex items-center px-4 py-2">
+          <TabsList class="">
+            <TabsTrigger value="单篇翻译" class="text-zinc-600 dark:text-zinc-200">
+              单篇翻译
+            </TabsTrigger>
+            <TabsTrigger value="多篇翻译" class="text-zinc-600 dark:text-zinc-200">
+              多篇翻译
+            </TabsTrigger>
+            <TabsTrigger value="翻译历史" class="text-zinc-600 dark:text-zinc-200">
+              翻译历史
+            </TabsTrigger>
+          </TabsList>
+
+        </div>
+        <Separator />
+        <div class="flex items-center px-4 py-2 max-w-1/2">
           <Select v-model="config.source_lang">
-            <SelectTrigger style="max-width: 150px;;">
+            <SelectTrigger>
               <SelectValue :placeholder="t('translate.sourceLanguagePlaceholder')" />
             </SelectTrigger>
             <SelectContent>
@@ -601,87 +733,242 @@ const languageOptions = computed(() => {
             </SelectContent>
           </Select>
 
-          <Icon name="lucide:arrow-right-left" class="mr-2 ml-2 size-4 cursor-pointer" @click=changeTaS />
-          <MultiSelect 
-            :placeholder="t('translate.targetLanguagePlaceholder')"
-            v-model="selectedValues" 
-            :options="languageOptions"
-            multiple
-          >
+          <Icon name="lucide:arrow-right" class="mr-2 ml-2 size-4 cursor-pointer" @click=changeTaS />
+          <MultiSelect placeholder="请选择目标语言（多选）" v-model="config.target_langs" :options="languageOptions" multiple>
             <MultiSelectTrigger>
               <MultiSelectValue :placeholder="t('translate.targetLanguagePlaceholder')" />
             </MultiSelectTrigger>
           </MultiSelect>
-          <Dialog>
-            <DialogTrigger as-child>
-              <Button class="ml-2">{{ t('translate.batchTranslate') }}</Button>
-            </DialogTrigger>
-            <DialogContent class="sm:max-w-[425px]">
-              <DialogHeader>
-                <DialogTitle>{{ t('translate.selectTxtFiles') }}</DialogTitle>
-                <DialogDescription>
-                </DialogDescription>
-              </DialogHeader>
-              <div class="grid w-full max-w-sm items-center gap-1.5">
-                <Input id="upload-file" type="file" multiple :placeholder="t('fileUpload.selectTxtFiles')" accept=".txt"
-                  @change="handleFileUpload" />
-              </div>
-              <div class="flex items-center " v-if="upload_loading">
-                <span class="text-sm text-muted-foreground">{{ t('fileUpload.progress') }}</span><Progress
-                  v-model="upload_progress" class="flex-1" />
-              </div>
-              <DialogFooter>
-                <Button type="submit" :disabled="upload_loading" @click="submit">
-                  <Loader2 v-if="upload_loading" class="w-4 h-4 mr-2 animate-spin" />
-                  {{ t('translate.submit') }}
-                </Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
-          <TabsList class="ml-auto">
-            <TabsTrigger value="操作" class="text-zinc-600 dark:text-zinc-200">
-              {{ t('translate.operation') }}
-            </TabsTrigger>
-            <TabsTrigger value="历史" class="text-zinc-600 dark:text-zinc-200">
-              {{ t('translate.history') }}
-            </TabsTrigger>
-          </TabsList>
         </div>
         <Separator />
 
-        <TabsContent value="操作" class="flex flex-1 overflow-auto m-0">
+        <TabsContent v-if="selectedTab == '单篇翻译'" value="单篇翻译" class="flex flex-1 overflow-auto m-0 gap-4 p-4 ">
           <div
-            class="bg-background/95 p-4 backdrop-blur supports-[backdrop-filter]:bg-background/60 w-1/2 flex-1 flex flex-col">
-            <Textarea :placeholder="t('translate.inputPlaceholder')" class="flex-1" />
+            class="bg-background/95  backdrop-blur supports-[backdrop-filter]:bg-background/60 w-1/2 flex-1 flex flex-col">
+            <Textarea id="input-text" :placeholder="t('translate.inputPlaceholder')" class="flex-1" />
             <p class="text-sm text-muted-foreground mt-2 text-right">
-
-              1/20000
+              0/20000
             </p>
-            <Button class="mt-4">{{ t('translate.startTranslate') }}</Button>
+            <Button class="mb-2 mt-2" @click="showSubmitDialog">开始翻译</Button>
+
           </div>
           <div
-            class="bg-background/95 p-4 backdrop-blur supports-[backdrop-filter]:bg-background/60 w-1/2 flex-1 flex flex-col">
-            <Textarea :placeholder="t('translate.outputPlaceholder')" class="flex-1" />
+            class="bg-background/95  backdrop-blur supports-[backdrop-filter]:bg-background/60 w-1/2 flex-1 flex flex-col">
+            <Textarea disabled :placeholder="t('translate.outputPlaceholder')" class="flex-1" />
             <p class="text-sm text-muted-foreground mt-2 text-right">
 
-              1/20000
+              0/20000
             </p>
-            <Button variant="outline" class="mt-4">{{ t('translate.copyResult') }}</Button>
           </div>
         </TabsContent>
-        <TabsContent value="历史" class="m-0">
-          <div class="bg-background/95 p-4 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-            <form>
-              <div class="relative ">
-                <Search class="absolute left-2 top-2.5 size-4 text-muted-foreground" />
-                <Input v-model="searchValue" :placeholder="t('common.search')" class="pl-8" />
+        <TabsContent v-if="selectedTab == '多篇翻译'" value="多篇翻译" class="flex flex-1 overflow-auto m-0 gap-4 p-4 ">
+          <div v-if="config.contents.length == 0"
+            class="bg-background/95  backdrop-blur supports-[backdrop-filter]:bg-background/60 w-1/2 flex-1 flex flex-col">
+            <!-- <Textarea :placeholder="t('translate.inputPlaceholder')" class="flex-1" /> -->
+            <div class="w-full flex-1 bg-gray/5">
+              <div class="w-full h-full text-center line-height-100 border rounded-md color-gray-500 cursor-pointer"
+                @click="openFileUploadDialog">
+                请点击批量导入TXT
               </div>
-            </form>
+            </div>
+            <p class="text-sm text-muted-foreground mt-2 text-right">
+              请上传需要翻译的TXT文件
+            </p>
+            <Button class="mb-2 mt-2 " disabled>开始翻译</Button>
+
           </div>
-          <TranslateList v-model:selected-mail="selectedMail" :items="unreadMailList" class="w-1/3" />
+          <div class="bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 w-1/2"
+            v-if="config.contents.length > 0">
+            <div
+              class="flex flex items-start gap-2 rounded-lg   text-left text-sm transition-all w-full justify-between">
+              <p class="leading-7 [&:not(:first-child)]:mt-6">
+                <span class="font-semibold">已导入TXT：</span>{{ config.contents.length }}
+              </p>
+              <Button variant="outline" size="sm" @click="openFileUploadDialog">重新导入</Button>
+            </div>
+            <ScrollArea class="h-[calc(100dvh-72px-56px-10rem-53px)] flex mt-2">
+              <div class="flex flex-1 flex-col gap-2  pt-0">
+                <TransitionGroup name="list" appear>
+                  <button v-for="item, index of config.contents" :key="index"
+                    class="flex flex-col items-start gap-2 rounded-lg border p-3 text-left text-sm transition-all hover:bg-accent"
+                    :title="item.content">
+                    <div class="w-full flex flex-col gap-1">
+                      <div class="flex items-center">
+                        <div class="flex items-center gap-2">
+                          <div class="font-semibold">
+                            {{ item.title }}</div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="line-clamp-2 text-xs text-muted-foreground">
+                      {{ item.content }}
+                    </div>
+                    <div class="text-xs text-muted-foreground flex justify-between w-full">
+                      <div>
+                        准备翻译... 字数： {{ item.content.length }}
+                      </div>
+                    </div>
+                  </button>
+                </TransitionGroup>
+              </div>
+            </ScrollArea>
+
+            <Button class="w-full mb-2 mt-2 " @click="showSubmitDialog">开始翻译</Button>
+          </div>
+          <div
+            class="bg-background/95  backdrop-blur supports-[backdrop-filter]:bg-background/60 w-1/2 flex-1 flex flex-col">
+            <Textarea disabled :placeholder="t('translate.outputPlaceholder')" class="flex-1" />
+            <p class="text-sm text-muted-foreground mt-2 text-right">
+
+              0/20000
+            </p>
+          </div>
+
+        </TabsContent>
+        <TabsContent v-if="selectedTab == '翻译历史'" value="翻译历史" class="flex flex-1 overflow-auto m-0 gap-4 p-4 ">
+          <ScrollArea class="h-[calc(100dvh-72px-56px-6rem-53px)] flex w-1/4">
+            <div class="flex flex-1 flex-col gap-2  pt-0">
+              <TransitionGroup name="list" appear>
+                <button v-for="item of tasklist" :key="item._id" :class="cn(
+                  'flex flex-col items-start gap-2 rounded-lg border p-3 text-left text-sm transition-all hover:bg-primary/5',
+                  selectedTask._id === item._id && 'bg-primary/5',
+                )" @click="getArtList(item)">
+
+                  <div class="w-full flex flex-col gap-1">
+                    <div class="flex items-center">
+                      <div class="flex items-center gap-2">
+                        <div class="font-semibold">
+                          {{ moment(item.created).fromNow() }}
+                        </div>
+                      </div>
+                      <div :class="cn(
+                        'ml-auto text-xs whitespace-nowrap flex-shrink-0 w-[60px] text-right',
+                        selectedTask._id === item._id
+                          ? 'text-foreground'
+                          : 'text-muted-foreground',
+                      )">
+                        {{ item.status }}
+                      </div>
+                    </div>
+                  </div>
+                  <div class="line-clamp-2 text-xs text-muted-foreground">
+                    语言：{{ item.target_lang_count }}
+                    导入：{{ item.content_count }}
+                    总计：{{ item.content_count * item.target_lang_count }}
+
+                  </div>
+                  <Separator />
+
+                  <div class="flex flex-wrap gap-2">
+                    <Badge v-for="lg in item.target_langs" :key="lg" variant="secondary">
+                      {{ lg }}
+                    </Badge>
+                  </div>
+                </button>
+              </TransitionGroup>
+            </div>
+          </ScrollArea>
+
+          <ScrollArea class="h-[calc(100dvh-72px-56px-6rem-53px)] flex w-1/4">
+            <div class="flex flex-1 flex-col gap-2  pt-0">
+              <TransitionGroup name="list" appear>
+                <button v-for="item of artlist" :key="item._id" :class="cn(
+                  'flex flex-col items-start gap-2 rounded-lg border p-3 text-left text-sm transition-all hover:bg-accent',
+                  selectedArt._id === item._id && 'bg-muted',
+                )" @click="select_art(item)">
+                  <div class="w-full flex flex-col gap-1">
+                    <div class="flex ">
+                      <div class="flex items-center gap-2">
+                        <div class="font-semibold line-clamp-2 ">
+                          {{ item.title }}
+                        </div>
+                      </div>
+                      <div :class="cn(
+                        'ml-auto text-xs flex-shrink-0 w-[60px] text-right',
+                        selectedTask._id === item._id
+                          ? 'text-foreground'
+                          : 'text-muted-foreground',
+                      )">
+                        {{ item.status }}
+                      </div>
+                    </div>
+                  </div>
+                  <div class="line-clamp-2 text-xs text-muted-foreground">
+                    源文：{{ item.content }}
+                  </div>
+                  <div class="line-clamp-2 text-xs text-muted-foreground">
+                    译文：{{ item.content }}
+                  </div>
+                  <div class="line-clamp-2 text-xs text-muted-foreground item-center flex">
+                    {{ item.source_lang }}
+                    <Icon name="lucide:arrow-right" class="mr-2 ml-2 size-4 cursor-pointer" />
+                    {{ item.target_lang }}
+                  </div>
+                  <Separator />
+
+                  <div class="flex flex-wrap gap-2">
+                    <Badge v-for="lg in item.target_langs" :key="lg" variant="secondary">
+                      {{ lg }}
+                    </Badge>
+                  </div>
+                </button>
+              </TransitionGroup>
+            </div>
+          </ScrollArea>
+          <ScrollArea class="h-[calc(100dvh-72px-56px-6rem-53px)] flex w-1/4 border rounded-md">
+            <div
+              class=" bg-background/95  backdrop-blur supports-[backdrop-filter]:bg-background/60 p-2">
+              <div editable="true" v-html="htmlContent" class="flex-1 "></div>
+            </div>
+          </ScrollArea>
+
+          <div
+            class="border rounded-md bg-background/95  backdrop-blur supports-[backdrop-filter]:bg-background/60 w-1/4 flex-1 flex flex-col">
+            <Textarea disabled :placeholder="t('translate.outputPlaceholder')" class="flex-1" />
+          </div>
+
+
         </TabsContent>
       </Tabs>
     </ResizablePanel>
+    <Dialog :open="isShowSubmitDialog" @update:open="isShowSubmitDialog = false">
+      <DialogContent class="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>提醒</DialogTitle>
+        </DialogHeader>
+        <p class="color-gray text-sm">
+          你已导入 {{ config.contents.length }} 篇文章，并且选择了 {{ config.target_langs.length }} 个目标语言，总计会生成 {{
+            config.target_langs.length * config.contents.length }} 篇翻译结果，是否确认开始翻译？
+        </p>
+        <div class="flex items-center ">
+          <span class="text-sm text-muted-foreground">{{ t('fileUpload.progress') }}</span><Progress
+            v-model="upload_progress" class="flex-1" />
+        </div>
+        <DialogFooter>
+          <Button type="submit" @click="submit" :disabled="upload_loading">
+            确定提交
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+    <Dialog :open="showFileUploadDialog" @update:open="closeFileUploadDialog">
+      <DialogContent class="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>{{ t('translate.selectTxtFiles') }}</DialogTitle>
+          <DialogDescription>
+          </DialogDescription>
+        </DialogHeader>
+        <div class="grid w-full max-w-sm items-center gap-1.5">
+          <Input id="upload-file" type="file" multiple :placeholder="t('fileUpload.selectTxtFiles')" accept=".txt"
+            @change="handleFileUpload" />
+        </div>
 
+        <DialogFooter>
+          <Button variant="outline" @click="closeFileUploadDialog">
+            取消
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   </ResizablePanelGroup>
 </template>
