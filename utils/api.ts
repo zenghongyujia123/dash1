@@ -244,4 +244,4 @@ const data = await api.post('/api/users', {
 })
 */
 // 设置基础URL
-api.setBaseURL('http://localhost:7001')
+api.setBaseURL('https://art.147gpt.com')

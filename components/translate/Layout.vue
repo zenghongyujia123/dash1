@@ -568,6 +568,9 @@ const getList = async () => {
   let res = await api.post('/usertask/usertask_list', { user_id, task_type: config.value.task_type, })
   if (res.list) {
     tasklist.value = res.list
+    if (!selectedTask.value._id && res.list.length > 0) {
+      getArtList(res.list[0])
+    }
   }
   console.log(res)
 }
@@ -627,7 +630,7 @@ const languageOptions = computed(() => {
     }))
   }))
 })
-const selectedTab = ref('多篇翻译')
+const selectedTab = ref('翻译历史')
 const isShowSubmitDialog = ref(false)
 const showSubmitDialog = () => {
   console.log(config.value)
@@ -657,9 +660,13 @@ const showHistory = () => {
 }
 const getArtList = async (task: any) => {
   selectedTask.value = task
-  let res = await api.post('/usertask/usertaskitem_list', { user_task_id: task._id })
+  let res = await api.post('/usertask/usertaskitem_list', { task_id: task._id })
   if (res.list) {
     artlist.value = res.list
+    if ((!selectedArt.value._id || selectedArt.value.task_id != task._id) && res.list.length > 0) {
+      select_art(res.list[0])
+    }
+
   }
   console.log(res)
 }
@@ -673,15 +680,13 @@ watch(() => selectedTab.value, (newTab, oldTab) => {
 const tasklist = ref([] as any)
 const artlist = ref([] as any)
 const htmlContent = ref('')
-const htmlNewContent = ref('')
+const htmlContentNew = ref('')
 const select_art = async (art: any) => {
   selectedArt.value = art
   let res = await api.post('/usertask/usertaskitem_format', { _id: art._id })
   if (res.format_content) {
     htmlContent.value = res.format_content
-  }
-  if (res.format_new_content) {
-    htmlNewContent.value = res.format_new_content
+    htmlContentNew.value = res.format_content_new
   }
 }
 </script>
@@ -838,7 +843,7 @@ const select_art = async (art: any) => {
                     <div class="flex items-center">
                       <div class="flex items-center gap-2">
                         <div class="font-semibold">
-                          {{ moment(item.created).fromNow() }}
+                          {{ moment(item.created).format('YYYY-MM-DD HH:mm:ss') }}
                         </div>
                       </div>
                       <div :class="cn(
@@ -894,38 +899,32 @@ const select_art = async (art: any) => {
                     </div>
                   </div>
                   <div class="line-clamp-2 text-xs text-muted-foreground">
-                    源文：{{ item.content }}
+                    源文：{{ item.content_short }}
                   </div>
                   <div class="line-clamp-2 text-xs text-muted-foreground">
-                    译文：{{ item.content }}
+                    译文：{{ item.content_new_short || item.status }}
                   </div>
+                  <Separator />
                   <div class="line-clamp-2 text-xs text-muted-foreground item-center flex">
                     {{ item.source_lang }}
                     <Icon name="lucide:arrow-right" class="mr-2 ml-2 size-4 cursor-pointer" />
                     {{ item.target_lang }}
-                  </div>
-                  <Separator />
-
-                  <div class="flex flex-wrap gap-2">
-                    <Badge v-for="lg in item.target_langs" :key="lg" variant="secondary">
-                      {{ lg }}
-                    </Badge>
                   </div>
                 </button>
               </TransitionGroup>
             </div>
           </ScrollArea>
           <ScrollArea class="h-[calc(100dvh-72px-56px-6rem-53px)] flex w-1/4 border rounded-md">
-            <div
-              class=" bg-background/95  backdrop-blur supports-[backdrop-filter]:bg-background/60 p-2">
+            <div class=" bg-background/95  backdrop-blur supports-[backdrop-filter]:bg-background/60 p-2">
               <div editable="true" v-html="htmlContent" class="flex-1 "></div>
             </div>
           </ScrollArea>
 
-          <div
-            class="border rounded-md bg-background/95  backdrop-blur supports-[backdrop-filter]:bg-background/60 w-1/4 flex-1 flex flex-col">
-            <Textarea disabled :placeholder="t('translate.outputPlaceholder')" class="flex-1" />
-          </div>
+          <ScrollArea class="h-[calc(100dvh-72px-56px-6rem-53px)] flex w-1/4 border rounded-md">
+            <div class=" bg-background/95  backdrop-blur supports-[backdrop-filter]:bg-background/60 p-2">
+              <div editable="true" v-html="htmlContentNew" class="flex-1 "></div>
+            </div>
+          </ScrollArea>
 
 
         </TabsContent>
